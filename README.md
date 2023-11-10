@@ -1,7 +1,7 @@
 uiuc_propeller
 ==============================
 
-Desenvolvimento de um modelo substitudo para predizer a performance da hélice com base nos dados disponibilizados pela UIUC
+Desenvolvimento de modelos substitudos para predizer a performance da hélice com base nos dados disponibilizados pela UIUC
 
 Project Organization
 ------------
