@@ -58,7 +58,7 @@ def model_maker(params, X, y):
         m = params['params_m']
         cat_encoder = QuantileEncoder(quantile = quantile, m = m)
         cat_encoder.fit(X, y)
-        X = cat_encoder.transform(X)
+        X[:, 3] = cat_encoder.transform(X).to_numpy()[:, 3]
         
     Xy = xgb.DMatrix(X, y)
 
@@ -104,8 +104,8 @@ for i, (obj, target) in enumerate(model_purpose):
     elif obj == 'Solidity':
         predictor = ['J', 'P_D', 'N', 'Solidity']
         
-    X_train = df.loc[:, predictor]
-    y_train = df.loc[:, target]
+    X_train = df.loc[:, predictor].to_numpy()
+    y_train = df.loc[:, target].to_numpy()
         
     models = model_maker(studies[i], X_train, y_train)
     
