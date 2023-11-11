@@ -8,6 +8,7 @@ Created on Mon Oct 16 15:32:37 2023
 """
 
 from sklearn.model_selection import KFold, cross_val_score
+import matplotlib.patches as mpatches
 from sklearn.metrics import mean_squared_error
 from category_encoders import QuantileEncoder
 from sklearn.pipeline import Pipeline
@@ -16,6 +17,9 @@ import xgboost as xgb
 import pandas as pd
 import numpy as np
 import joblib
+
+# %%
+
 
 df_train = pd.read_csv('../../data/processed/train.csv')
 df_test = pd.read_csv('../../data/processed/test.csv')
@@ -185,6 +189,7 @@ def eval_plot(ax, results, target, cv_type):
     x = np.arange(3)
     width = 0.25 
     multiplier = 0
+    colors= ['r', 'b', 'k']
     
     for i, (score, value) in enumerate(results.items()):
         
@@ -196,7 +201,7 @@ def eval_plot(ax, results, target, cv_type):
         value = np.array(value)[ind]
         
         offset = width * multiplier
-        _ = ax.bar(x + offset, value, width, label=score)
+        _ = ax.bar(x + offset, value, width, label=score, color = colors[i])
         multiplier += 1
         
     ax.set_ylabel('RMSE')
@@ -235,16 +240,19 @@ def plot_residuals(axes, results, target):
         train_score = results["Train Score"][ind[i]]
         
         ax.scatter(y_test_preds[i, :], y_test_resid[i, :], alpha = 0.05,
-                   color = 'r',
-                   label = f'Test Score: {test_score:.3f}')
+                   color = 'r')
         ax.scatter(y_train_preds[i, :], y_train_resid[i, :], alpha = 0.05,
-                   color = 'b',
-                   label = f'Train Score: {train_score:.3f}')
+                   color = 'b')
+        
+        red_patch = mpatches.Patch(color='red', label=f'Test Score: {test_score:.3f}')
+        blue_patch = mpatches.Patch(color='blue', label=f'Train Score: {train_score:.3f}')
+        
         ax.set_ylim(-0.13, 0.13)
         ax.axhline(0, color = 'k', ls = '--')
-        ax.legend(loc = 2)
+        ax.legend(handles = [red_patch, blue_patch], loc = 2, ncols = 3)
         ax.set_title(f'{target} {objectives[i]} Residuals')
-        ax.set_xlabel('{target} Predictions')
+        ax.set_xlabel(f'{target} Predictions')
+        
     
 ct_axes = (ax[0, 0], ax[0, 1], ax[0, 2])
 cp_axes = (ax[1, 0], ax[1, 1], ax[1, 2])
