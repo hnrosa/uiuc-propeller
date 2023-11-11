@@ -281,6 +281,9 @@ for obj, target in model_purpose:
     
     df_results[f'{target}_{obj}'] = series
     
-df_results['Counts'] = df_test.groupby('Family').size()
-    
 print(df_results)
+
+# %%
+
+df_results.to_csv('test_results.csv')
+

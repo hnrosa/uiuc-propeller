@@ -51,7 +51,7 @@ def model_maker(params, X, y):
     reg_alpha = params['params_reg_alpha']
     learning_rate = params['params_learning_rate']
     n_estimators = params['user_attrs_n_estimators']
-    alphas = np.array([0.05, 0.95])
+    alphas = np.array([0.05, 0.5, 0.95])
     
     if family: 
         quantile = params['params_quantile']
@@ -62,7 +62,7 @@ def model_maker(params, X, y):
         
     Xy = xgb.DMatrix(X, y)
 
-    params_quantiles = {
+    params = {
         'objective': 'reg:quantileerror',
         'quantile_alpha': alphas, 
         'max_depth' : max_depth,
@@ -73,24 +73,14 @@ def model_maker(params, X, y):
         'tree_method' : 'hist',
         }
     
-    params = {
-        'max_depth' : max_depth,
-        'min_child_weight' : min_child_weight,
-        'learning_rate' : learning_rate,
-        'reg_lambda' : reg_lambda,
-        'reg_alpha' : reg_alpha,
-        'tree_method' : 'hist',
-        }
-    
-    xgb_model_mean = xgb.train(params, Xy, n_estimators)
-    xgb_model_quantiles = xgb.train(params_quantiles, Xy, n_estimators)
+    xgb_model = xgb.train(params, Xy, n_estimators)
     
     if family:
         
-        return (xgb_model_mean, xgb_model_quantiles, cat_encoder)
+        return (xgb_model, cat_encoder)
     
     else:
-        return (xgb_model_mean, xgb_model_quantiles)
+        return xgb_model,
     
     
 for i, (obj, target) in enumerate(model_purpose):
@@ -109,14 +99,12 @@ for i, (obj, target) in enumerate(model_purpose):
         
     models = model_maker(studies[i], X_train, y_train)
     
-    if len(models) > 2:
+    if len(models) > 1:
         joblib.dump(models[0], f'../../models/{target}_{obj}_model_{date}.joblib')
-        joblib.dump(models[1], f'../../models/{target}_{obj}_model_quantile_{date}.joblib')
-        joblib.dump(models[2], f'../../models/{target}_{obj}_encoder_{date}.joblib')
+        joblib.dump(models[1], f'../../models/{target}_{obj}_encoder_{date}.joblib')
         
     else:
         joblib.dump(models[0], f'../../models/{target}_{obj}_model_{date}.joblib')
-        joblib.dump(models[1], f'../../models/{target}_{obj}_model_quantile_{date}.joblib')
         
     print(f'{target}_{obj} done.')
         

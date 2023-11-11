@@ -40,10 +40,6 @@ class SurrogateProp:
             self.ct_model = joblib.load('../../models/CT_General_model_2023-11-4_15-19.joblib')
             self.cp_model = joblib.load('../../models/CP_General_model_2023-11-4_15-19.joblib')
             
-            self.ct_quantile_model = joblib.load('../../models/CT_General_model_quantile_2023-11-4_15-19.joblib')
-            self.cp_quantile_model = joblib.load('../../models/CP_General_model_quantile_2023-11-4_15-19.joblib')
-            
-            
             M = np.zeros((size, 3))
             
             M[:, 0] = self.J
@@ -58,9 +54,6 @@ class SurrogateProp:
             self.Family = Family
             self.ct_model = joblib.load('../../models/CT_Family_model_2023-11-4_15-19.joblib')
             self.cp_model = joblib.load('../../models/CP_Family_model_2023-11-4_15-19.joblib')
-            
-            self.ct_quantile_model = joblib.load('../../models/CT_Family_model_quantile_2023-11-4_15-19.joblib')
-            self.cp_quantile_model = joblib.load('../../models/CP_Family_model_quantile_2023-11-4_15-19.joblib')
             
             self.cp_encoder = joblib.load('../../models/CP_Family_encoder_2023-11-4_15-19.joblib')
             self.ct_encoder = joblib.load('../../models/CT_Family_encoder_2023-11-4_15-19.joblib')
@@ -85,10 +78,6 @@ class SurrogateProp:
             self.ct_model = joblib.load('../../models/CT_Solidity_model_2023-11-4_15-19.joblib')
             self.cp_model = joblib.load('../../models/CP_Solidity_model_2023-11-4_15-19.joblib')
             
-            self.ct_quantile_model = joblib.load('../../models/CT_Solidity_model_quantile_2023-11-4_15-19.joblib')
-            self.cp_quantile_model = joblib.load('../../models/CP_Solidity_model_quantile_2023-11-4_15-19.joblib')
-            
-            
             M = np.zeros((size, 4))
             
             M[:, 0] = self.J
@@ -104,15 +93,7 @@ class SurrogateProp:
         
         self.CT = self.ct_model.predict(M_ct)
         self.CP = self.cp_model.predict(M_cp)
-        self.CT_quant = self.ct_quantile_model.predict(M_ct)
-        self.CP_quant = self.cp_quantile_model.predict(M_cp)
+        self.eta = self.J.reshape(-1, 1) * self.CT / self.CP
         
         self.T = rho * n ** 2 * D ** 4 * self.CT
-        self.T_quant = rho * n ** 2 * D ** 4 * self.CT_quant
-        
         self.P = rho * n ** 3 * D ** 5 * self.CP
-        self.P_quant = rho * n ** 3 * D ** 5 * self.CP_quant
-        
-        self.eta = self.J * self.CT / self.CP
-        self.eta_quant = self.J.reshape(-1, 1) * self.CT_quant / self.CP_quant
-
