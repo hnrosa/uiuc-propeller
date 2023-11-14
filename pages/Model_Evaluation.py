@@ -50,13 +50,13 @@ family_names = {v:k for k, v in family_names.items()}
 
 st.title('Model Evaluation')
 st.header('Residual Plots')
-st.image('./residual_plot.png')
+st.image('src/models/residual_plot.png')
 st.header('Test Results per Propeller Family')
 
 tab1, tab2 = st.tabs(['RMSE', 'R²'])
 
 with tab1:
-    df = pd.read_csv('test_results_rmse.csv')
+    df = pd.read_csv('src/models/test_results_rmse.csv')
     df = df.iloc[1:, :]
     df['Family'] = df['Family'].replace(family_names)
     st.dataframe(df.style.
@@ -66,7 +66,7 @@ with tab1:
                  )
 
 with tab2:
-    df = pd.read_csv('test_results_r2.csv')
+    df = pd.read_csv('src/models/test_results_r2.csv')
     df = df.iloc[1:, :]
     df['Family'] = df['Family'].replace(family_names)
     st.dataframe(df.style.

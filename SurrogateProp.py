@@ -39,8 +39,8 @@ class SurrogateProp:
         
         if Sol is None and Family is None:
             
-            self.ct_model = joblib.load('../../models/CT_General_model_2023-11-4_15-19.joblib')
-            self.cp_model = joblib.load('../../models/CP_General_model_2023-11-4_15-19.joblib')
+            self.ct_model = joblib.load('models/CT_General_model_2023-11-4_15-19.joblib')
+            self.cp_model = joblib.load('models/CP_General_model_2023-11-4_15-19.joblib')
             
             M = np.zeros((size, 3))
             
@@ -53,11 +53,11 @@ class SurrogateProp:
         
         elif Sol is None and Family is not None:
             
-            self.ct_model = joblib.load('../../models/CT_Family_model_2023-11-4_15-19.joblib')
-            self.cp_model = joblib.load('../../models/CP_Family_model_2023-11-4_15-19.joblib')
+            self.ct_model = joblib.load('models/CT_Family_model_2023-11-4_15-19.joblib')
+            self.cp_model = joblib.load('models/CP_Family_model_2023-11-4_15-19.joblib')
             
-            self.cp_encoder = joblib.load('../../models/CP_Family_encoder_2023-11-4_15-19.joblib')
-            self.ct_encoder = joblib.load('../../models/CT_Family_encoder_2023-11-4_15-19.joblib')
+            self.cp_encoder = joblib.load('models/CP_Family_encoder_2023-11-4_15-19.joblib')
+            self.ct_encoder = joblib.load('models/CT_Family_encoder_2023-11-4_15-19.joblib')
             
             M = np.empty((size, 4), dtype = object)
             
@@ -75,8 +75,8 @@ class SurrogateProp:
             
         else:
             
-            self.ct_model = joblib.load('../../models/CT_Solidity_model_2023-11-4_15-19.joblib')
-            self.cp_model = joblib.load('../../models/CP_Solidity_model_2023-11-4_15-19.joblib')
+            self.ct_model = joblib.load('models/CT_Solidity_model_2023-11-4_15-19.joblib')
+            self.cp_model = joblib.load('models/CP_Solidity_model_2023-11-4_15-19.joblib')
             
             M = np.zeros((size, 4))
             

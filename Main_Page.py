@@ -78,7 +78,7 @@ st.set_page_config(
 
 st.title('Two Blade Propeller Surrogate Model')
 st.text('Propeller Performance Prediction using XGBoost Algorithm')
-st.image('./propeller_photo.png')
+st.image('src/models/propeller_photo.png')
 
 stacks = ['performance curves', 'disadvantages', 
           'surrogate models', 'optimal parameters',
