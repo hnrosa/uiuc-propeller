@@ -9,7 +9,7 @@ Created on Mon Oct 16 15:32:37 2023
 
 from sklearn.model_selection import KFold, cross_val_score
 import matplotlib.patches as mpatches
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, r2_score
 from category_encoders import QuantileEncoder
 from sklearn.pipeline import Pipeline
 import matplotlib.pyplot as plt
@@ -17,8 +17,24 @@ import xgboost as xgb
 import pandas as pd
 import numpy as np
 import joblib
+import matplotlib as mpl
 
 # %%
+
+mpl.rcParams.update(mpl.rcParamsDefault)
+
+custom_params = {
+    'lines.linestyle': '-',
+    'lines.markersize': 0,
+    'font.family': 'sans-serif',
+    'xtick.labelsize': 15,
+    'ytick.labelsize': 15,
+    'grid.linestyle': '--',
+    'grid.color': '#CCCCCC',
+    'figure.titlesize': 21,
+    'legend.fontsize': 13,
+    'axes.labelsize': 15,
+}
 
 
 df_train = pd.read_csv('../../data/processed/train.csv')
@@ -219,7 +235,7 @@ fig.tight_layout()
 
 #%%
 
-fig, ax = plt.subplots(2, 3, figsize = (15, 6), dpi = 300)
+fig, ax = plt.subplots(2, 3, figsize = (15, 8), dpi = 300)
 
 def plot_residuals(axes, results, target):
     
@@ -252,6 +268,7 @@ def plot_residuals(axes, results, target):
         ax.legend(handles = [red_patch, blue_patch], loc = 2, ncols = 3)
         ax.set_title(f'{target} {objectives[i]} Residuals')
         ax.set_xlabel(f'{target} Predictions')
+        ax.set_ylabel(r'$y_i$ - $\hat{y_i}$')
         
     
 ct_axes = (ax[0, 0], ax[0, 1], ax[0, 2])
@@ -271,27 +288,49 @@ df_test['CP_General'] = results['y_test_pred'][1]
 df_test['CP_Family'] = results['y_test_pred'][3] 
 df_test['CP_Solidity'] = results['y_test_pred'][5] 
 
-def rmse_family(df, target, target_pred):
+def metric_family(df, target, target_pred, metric = 'rmse'):
     y_true = df.loc[:, target]
     y_pred = df.loc[:, target_pred]
     
-    return mean_squared_error(y_true, y_pred, squared = False)
+    if metric == 'rmse':
+        df_out = mean_squared_error(y_true, y_pred,
+                                    squared = False)
+        
+    else:
+        df_out = r2_score(y_true, y_pred)
+        
+    
+    
+    return df_out
 
-df_results = pd.DataFrame()
+df_results_rmse = pd.DataFrame()
+df_results_r2 = pd.DataFrame()
 
-pd.set_option('display.float_format', '{:.4f}'.format)
+
 
 for obj, target in model_purpose:
     
-    series = df_test.groupby('Family').apply(
-        lambda df: rmse_family(df, f'{target}', f'{target}_{obj}')
+    series_rmse = df_test.groupby('Family').apply(
+        lambda df: metric_family(df, f'{target}', f'{target}_{obj}')
         )
     
-    df_results[f'{target}_{obj}'] = series
+    series_r2 = df_test.groupby('Family').apply(
+        lambda df: metric_family(df, f'{target}', f'{target}_{obj}', 'r2')
+        )
     
-print(df_results)
+    df_results_rmse[f'{target}_{obj}'] = series_rmse
+    df_results_r2[f'{target}_{obj}'] = series_r2
+    
+pd.set_option('display.float_format', '{:.4f}'.format)
+    
+print(df_results_rmse)
+
+pd.set_option('display.float_format', '{:.3f}'.format)
+
+print(df_results_r2)
 
 # %%
 
-df_results.to_csv('test_results.csv')
+df_results_rmse.to_csv('test_results_rmse.csv')
+df_results_r2.to_csv('test_results_r2.csv')
 
