@@ -112,10 +112,10 @@ with st.sidebar:
         'Define Freestream Velocity [m/s]',
         0.0, 50.0, (0.0, 30.0))
     D = st.number_input(
-        'Define Diameter [in.]', 5, 18, 12,
+        'Define Diameter [in.]', 3., 20., 12,
         )
     P = st.number_input(
-        'Define Pitch [in.]', 5, 18, 8, 
+        'Define Pitch [in.]', 3., 20., 8, 
         )
     N = st.number_input(
         'Define Rotation [RPM]', 1000, 15000, 8000
