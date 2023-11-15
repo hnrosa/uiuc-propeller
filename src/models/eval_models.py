@@ -232,6 +232,8 @@ eval_plot(ax[1, 0], results, 'CP', 'Custom')
 eval_plot(ax[1, 1], random_results, 'CP', 'Random') 
 
 fig.tight_layout()
+plt.savefig('images/cross_validation.png')
+plt.show()
 
 #%%
 
@@ -278,6 +280,8 @@ plot_residuals(ct_axes, results, 'CT')
 plot_residuals(cp_axes, results, 'CP') 
 
 fig.tight_layout()
+plt.savefig('images/residuals.png')
+plt.show()
 
 #%%
 

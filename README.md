@@ -1,11 +1,11 @@
 Two Blade Propeller Surrogate Model
 ==============================
 
-![Alt text](propeller_photo.png)
+![Alt text](demo_app.gif)
 
 When designing a UAV, something that must be taken into consideration is its propulsive system. Good predictions of its performance curves guarantee a robust and reliable project. To achieve this, numerical and experimental methods can be used. However, both have their disadvantages. Numerical methods require time, are computationally expensive and need a defined geometry of the propeller to be applied, in addition to a advanced knowledge of the designer. Experimental tests require wind tunnels and calibrated equipment for the correct measurement of the propellers. A third alternative is use surrogate models, which consist of compact models to estimate complex results, based on experimental or/and simulation data. Thus, the designer can quickly predict the performance of a propeller, choosing optimal parameters for preliminary propeller design, or making decisions such as purchase of commercial propellers based on parameters provided by the manufacturer.
 
-![Alt text](demo_app.gif)
+
 
 Data Extraction and Feature Engineering
 ---

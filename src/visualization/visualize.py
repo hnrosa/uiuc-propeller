@@ -133,7 +133,6 @@ fig.tight_layout()
 plt.savefig('images/boxplot_performance01.png')
 plt.show()
 
-
 # %%
 
 fig, axes = plt.subplots(2, 2, figsize = (12, 6), dpi = 300)
