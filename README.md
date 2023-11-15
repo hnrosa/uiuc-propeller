@@ -3,6 +3,15 @@ Two Blade Propeller Surrogate Model
 
 ![Alt text](demo_app.gif)
 
+### Libraries Used:
+
+**Data Extraction and Cleaning**: *parse*, *os* <br>
+**Feature Engineering**: *category-encoders*,  *scipy*<br>
+**Data Analysis**: *matplolib*, *seaborn*, *numpy*, *pandas*<br>
+**Machine Learning**: *xgboost*, *scikit-learn*, *optuna*, *pendulum*<br>
+**Deployment**: *streamlit* <br>
+
+
 When designing a UAV, something that must be taken into consideration is its propulsive system. Good predictions of its performance curves guarantee a robust and reliable project. To achieve this, numerical and experimental methods can be used. However, both have their disadvantages. Numerical methods require time, are computationally expensive and need a defined geometry of the propeller to be applied, in addition to a advanced knowledge of the designer. Experimental tests require wind tunnels and calibrated equipment for the correct measurement of the propellers. A third alternative is use surrogate models, which consist of compact models to estimate complex results, based on experimental or/and simulation data. Thus, the designer can quickly predict the performance of a propeller, choosing optimal parameters for preliminary propeller design, or making decisions such as purchase of commercial propellers based on parameters provided by the manufacturer.
 
 
@@ -26,36 +35,68 @@ Were $B$ is blade numbers, $D$ the diameter, $c$ the chord, and $r$ the radius.
 Data Analysis
 --------------------------------
 
-### Performance  parameters distributions
-
-![Alt text](src/visualization/images/hist_performance.png)
+Before creating our surrogate models, we first have to do a exploratory analysis in order to give insights and other information that will contribute to our modeling process.
 
 ### Number of Blades
 
-|   Blade |   count |
-|--------:|--------:|
-|       2 |     243 |
-|       3 |       6 |
-|       4 |       5 |
+Our dataset contains 254 propellers, 243 of them are two bladed, 6 three bladed and 5 four bladed. Considering that the vast majority of the propellers are two bladed, we decided to exclude the other types of propellers. But first, let's compare the difference in performance given the number of blades. 
 
+![Alt text](src/visualization/images/boxplot_performance.png)
 
-![Alt text](src/visualization/images/boxplot_performance01.png)
+As we can see, the maximum CT increases, but also the maximum CP, in other words, more blades can lead to a higher traction, but will require more power. Its worth noting that the maximum efficiency is reduced as the number of blades increases. 
 
 ### P/D and Solidity
 
+the Pitch per Diameter and Solidity are important geometric properties of the propellers. Let's look at how they relate to the overall performance.
+
 ![Alt text](src/visualization/images/scatter_02.png)
+
+The increse in P/D results in a increase in CT and CP, which doesn't directly translates into a increase in efficiency, but it allows the efficiency to achieve higher values with higher P/D. Interesting enough, P/D and the advanced ratio that in which the propeller achieves maximum efficiency are strongly correlated, which indicates that low P/D are prefered in high rotation conditions and higher P/D are prefered in low rotation conditions.
 
 ![Alt text](src/visualization/images/scatter_01.png)
 
+Althogh we can't conclude much about the relationship between solidity and efficiency, CT and CP increases as the solidity increases. A more depth statistical analysis is recommended to investigate this relationships.
+
+### Advanced Ratio
+
+As for the advanced ratio, it was decided to plot the propellers in gropus considering their families. The P/D was used to stratify the propellers.
+
+![Alt text](src/visualization/ct_cp_eta_plots/da4052_ct_cp_eta.png)
+
+These are the propellers from DA4052, whose behaviour can be generalized for all families:
+the CT and CP descreases as the advanced ratio increases. Higher P/D translates into higher CT and CP values and maximum efficiency advanced ratio increases as P/D increases as was previously discussed.
+
 ### Performance per Family
+
+To see the distinction between the Families, its performance characteristics were analyzed.
 
 ![Alt text](src/visualization/images/boxplot_performance01.png)
 
-### Advanced Ratio and P/D relationships
-![Alt text](src/visualization/ct_cp_eta_plots/da4052_ct_cp_eta.png)
+Given the above figure, it is quite clear that the maximum performance values can be used as a way to distinguish different families. This will be latter used in our modeling.
 
 Model Training
 -------
+
+In order to create our surrogate models, Three approaches are used: General approach (we don't know the Propellers' Family), Family approach (Propeller's Family is considered), and Solidity (Solidity is considered). Since Solidity is not generally given by the manufacturer, we can't consider a approach we the family and the solidty are simultaneously used. For preprocessing the families feature, the Quantile Encoder was is used. The reason why this encoding was selected over the Mean Encoder was because of the results obtained in our data analysis, which the higher values performance could lead to a distinction between the families, the quantile can be considered a hyperparament, giving the encoding more flexibility. A more correct encode would be to retrieve the maximum performance values of all the propellers and return a smoothed average as our encode value. This encode wasn't implemented due to its difficulty, and will be considered for further improvements.
+
+The dataset was divded in a Training (70%) and a Test (30%) Set, having each set different propellers, proportionally stratified by their families. As for Cross Validation, each validation set contained propellers that weren't present in the partial training set, in other to emulate the condition the we established into making the Training and Test set. We can see below that our Cross Validation has way less overfitting than a random Cross Validation, since it randomly takes values for all propellers, giving it a overly optimistic model.  
+
+![Alt text](src/models/images/cross_validation.png)
+
+After this project, I studied cross validation more, and realise that our CV approach was actually a Group KFold approach, implemented in scikit-learn.
+
+Having our stes defined, a XGBoost algortihm is trained, having its hyperparameter selection conducted by Bayesian Optimization, via Optuna framework. The training resulted in the following results: 
+
+![Alt text](src/models/images/residuals.png)
+
+Assuming the propellers' family considerably improve the CT and CP results, and the Solidity assumption gave improvements for the CP. This is expected since half of the propellers don't have information regarding its chord dsitributions.
+
+
+Deployment
+---
+The deployment was made as a web application with streamlit Framework, which can be acessed here: https://surrogate-propeller.streamlit.app/. Quantiles from the model were also trained to give our results coverage.
+
+
 
 Project Organization
 ------------
